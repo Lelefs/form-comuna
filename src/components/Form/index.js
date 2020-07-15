@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { validate } from 'email-validator';
 import { FiMail, FiUser, FiPhone } from 'react-icons/fi';
 
 import {
@@ -12,6 +13,7 @@ import {
 export default () => {
   const [email, setEmail] = useState('');
   const [emailIsFocused, setEmailIsFocused] = useState(false);
+  const [emailIsErrored, setEmailIsErrored] = useState(false);
 
   const [nome, setNome] = useState('');
   const [nomeIsFocused, setNomeIsFocused] = useState(false);
@@ -19,8 +21,7 @@ export default () => {
   const [celular, setCelular] = useState('');
   const [celularIsFocused, setCelularIsFocused] = useState(false);
 
-  const [cultoManha, setCultoManha] = useState(false);
-  const [cultoNoite, setCultoNoite] = useState(false);
+  const [horarioCulto, setHorarioCulto] = useState('');
 
   const handledEmailFocus = useCallback(() => {
     setEmailIsFocused(true);
@@ -28,6 +29,7 @@ export default () => {
 
   const handledEmailBlur = useCallback(() => {
     setEmailIsFocused(false);
+    setEmailIsErrored(false);
   }, []);
 
   const handledNomeFocus = useCallback(() => {
@@ -43,31 +45,44 @@ export default () => {
   }, []);
 
   const handledCelularBlur = useCallback(() => {
-    setCelularIsFocused(false);
-  }, []);
+    if (celular.length > 11) {
+      const novoCelular = celular.slice(0, 11);
+      setCelular(novoCelular);
+    }
 
-  function handleInputChange(event) {
+    setCelularIsFocused(false);
+  }, [celular]);
+
+  function handleChangeHorarioCulto(event) {
     const target = event.target;
 
-    if (target.name === 'cultoManha') {
-      setCultoManha(!cultoManha);
+    if (target.name === 'manha') {
+      setHorarioCulto('manha');
     } else {
-      setCultoNoite(!cultoNoite);
+      setHorarioCulto('noite');
     }
   }
 
-  const handleSubmitForm = useCallback(() => {
-    // alert('Seu formulário foi enviado');
-    console.log(celular);
+  const handleSubmitForm = event => {
+    event.preventDefault();
+
+    const emailValido = validate(email);
+
+    if (!emailValido) {
+      alert('Insira um e-mail válido');
+      setEmailIsErrored(true);
+      return;
+    }
+
+    alert('Seu formulário foi enviado');
     setEmail('');
     setEmailIsFocused(false);
     setNome('');
     setNomeIsFocused(false);
     setCelular('');
     setCelularIsFocused(false);
-    setCultoManha(false);
-    setCultoNoite(false);
-  }, [celular]);
+    setHorarioCulto('');
+  };
 
   return (
     <Container>
@@ -75,7 +90,11 @@ export default () => {
         <label htmlFor="emailInput">
           Endereço de e-mail <span>*</span>{' '}
         </label>
-        <DivInput isFilled={!!email} isFocused={emailIsFocused}>
+        <DivInput
+          isFilled={!!email}
+          isFocused={emailIsFocused}
+          isErrored={emailIsErrored}
+        >
           <FiMail size={20} />
           <input
             type="email"
@@ -117,7 +136,7 @@ export default () => {
             type="number"
             id="celularInput"
             placeholder="Seu celular"
-            maxLength={11}
+            max={99999999999}
             value={celular}
             onChange={e => setCelular(e.target.value)}
             onFocus={handledCelularFocus}
@@ -132,11 +151,11 @@ export default () => {
         </label>
         <DivCheckbox>
           <input
-            type="checkbox"
+            type="radio"
             id="cultoManhaInput"
-            name="cultoManha"
-            checked={cultoManha}
-            onChange={handleInputChange}
+            name="manha"
+            checked={horarioCulto === 'manha'}
+            onChange={handleChangeHorarioCulto}
           />
           <label htmlFor="cultoManhaInput">
             Manhã, check-in às 9h, início às 10h
@@ -145,11 +164,11 @@ export default () => {
 
         <DivCheckbox>
           <input
-            type="checkbox"
+            type="radio"
             id="cultoNoiteInput"
-            name="cultoNoite"
-            checked={cultoNoite}
-            onChange={handleInputChange}
+            name="noite"
+            checked={horarioCulto === 'noite'}
+            onChange={handleChangeHorarioCulto}
           />
           <label htmlFor="cultoNoiteInput">
             Noite, check-in às 17h, início às 18h
@@ -158,12 +177,9 @@ export default () => {
       </DivLabelInput>
 
       <Button
-        onClick={() => handleSubmitForm()}
+        onClick={handleSubmitForm}
         disabled={
-          email === '' ||
-          nome === '' ||
-          celular === '' ||
-          (!cultoManha && !cultoNoite)
+          email === '' || nome === '' || celular === '' || horarioCulto === ''
         }
       >
         Enviar

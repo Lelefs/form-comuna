@@ -39,10 +39,18 @@ export const DivInput = styled.div`
       border-color: #34a853;
       color: #34a853;
     `}
+
   ${props =>
     props.isFilled &&
     css`
       color: #34a853;
+    `}
+
+  ${props =>
+    props.isErrored &&
+    css`
+      border-color: #c53030;
+      color: #c53030;
     `}
 
   svg {
@@ -78,28 +86,30 @@ export const DivCheckbox = styled.div`
     height: 20px;
     border: 1px solid #666360;
     color: #fff;
-    border-radius: 4px;
+    border-radius: 50%;
     margin-right: 15px;
     transition: all 0.2s;
 
     &:hover {
       filter: brightness(90%);
+      -webkit-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.5);
+      -moz-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.5);
+      box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.5);
     }
 
     &:checked {
-      background-color: #34a853;
       border: 1px solid #34a853;
     }
 
     &:checked:after {
       content: '';
       position: absolute;
-      width: 10px;
-      height: 6px;
+      width: 12px;
+      height: 12px;
       border: 0;
-      border-bottom: 2px solid #fff;
-      border-left: 2px solid #fff;
-      transform: translate(3px, 2px) rotate(-50deg);
+      background: #34a853;
+      border-radius: 50%;
+      transform: translate(3px, 2.6px);
     }
 
     &:focus {
