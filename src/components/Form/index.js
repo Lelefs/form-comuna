@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { validate } from 'email-validator';
+import { useHistory } from 'react-router-dom';
 import { FiMail, FiUser, FiPhone } from 'react-icons/fi';
 
 import {
@@ -11,6 +12,8 @@ import {
 } from './styles';
 
 export default () => {
+  const history = useHistory();
+
   const [email, setEmail] = useState('');
   const [emailIsFocused, setEmailIsFocused] = useState(false);
   const [emailIsErrored, setEmailIsErrored] = useState(false);
@@ -74,14 +77,7 @@ export default () => {
       return;
     }
 
-    alert('Seu formulário foi enviado');
-    setEmail('');
-    setEmailIsFocused(false);
-    setNome('');
-    setNomeIsFocused(false);
-    setCelular('');
-    setCelularIsFocused(false);
-    setHorarioCulto('');
+    history.push('/finalizacao');
   };
 
   return (
@@ -179,7 +175,11 @@ export default () => {
       <Button
         onClick={handleSubmitForm}
         disabled={
-          email === '' || nome === '' || celular === '' || horarioCulto === ''
+          email === '' ||
+          nome === '' ||
+          celular === '' ||
+          celular.length < 8 ||
+          horarioCulto === ''
         }
       >
         Enviar
